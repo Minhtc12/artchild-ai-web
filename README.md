@@ -15,7 +15,7 @@ ARTCHILD_AI_WEB/
 ├── templates/ # HTML giao diện Flask
 │ └── index.html
 ├── uploads/ # Ảnh upload (tạo khi chạy app)
-├── venv/ # Môi trường ảo Python (không push lên GitHub)
+├── venv/ # Môi trường ảo Python 
 ├── .gitignore
 ├── app.py # File Flask chính
 ├── best_01.pt # Mô hình YOLOv8 đã huấn luyện (link Drive)
