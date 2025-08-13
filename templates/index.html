@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AI Artwork Reviewer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding-top: 20px;
+        }
+
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-img {
+            max-width: 100%;
+            border-radius: 8px;
+            max-height: 500px; /* ảnh không cao quá */
+            object-fit: contain;
+        }
+
+        .label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="mb-4 text-center text-primary">🎨 AI Artwork Reviewer</h1>
+
+        <!-- Upload Form -->
+        <div class="card p-4 mb-4">
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="file" class="form-label">Chọn tranh để đánh giá:</label>
+                    <input type="file" class="form-control" name="file" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-success">Tải lên và đánh giá</button>
+            </form>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+
+        {% if img_path %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <h5 class="mb-3">🖼️ Tranh đã tải lên:</h5>
+                    <img src="{{ url_for('static', filename=img_path) }}" alt="Uploaded artwork" class="result-img">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-3">
+                    <h5 class="mb-3">📊 Kết quả đánh giá:</h5>
+                    <p><span class="label">Thể loại tranh:</span> {{ category }}</p>
+                    <p><span class="label">Các đối tượng phát hiện:</span> {{ labels }}</p>
+                    <p><span class="label">Đối tượng liên quan:</span> {{ matched }}</p>
+                    <p><span class="label">Điểm số:</span> <strong>{{ score }}/10</strong></p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if feedback %}
+        <div class="card p-4 mt-4">
+            <h5 class="mb-3">🧠 Nhận xét của AI:</h5>
+            <p>{{ feedback }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+
+</html>

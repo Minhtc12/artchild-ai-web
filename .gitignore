@@ -1,0 +1,20 @@
+# Bỏ thư mục môi trường ảo
+venv/
+
+# YOLO outputs
+runs/
+
+# Uploads người dùng
+uploads/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Model weights
+*.pt
+*.pth
+
+# OS files
+.DS_Store
+Thumbs.db
