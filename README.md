@@ -45,6 +45,7 @@ client = OpenAI(
     base_url="http://localhost:1234/v1",  # thay bằng địa chỉ server LM Studio của bạn
     api_key="vistral-7b-chat"             # Thay bằng API key của bạn
 )
+
 ## ⚙️ Cài đặt & chạy ứng dụng
 
 ### 1️⃣ Clone repo
