@@ -49,15 +49,17 @@ Sau khi cài, bạn cần:
 3. Vào tab **Local Inference Server** → bật server và ghi nhớ địa chỉ **base_url**
 4. Mở file `app.py` và thêm/chỉnh dòng kết nối sau:
 
-````python
+```python
 client = OpenAI(
     base_url="http://localhost:1234/v1",  # thay bằng địa chỉ server LM Studio của bạn
     api_key="vistral-7b-chat"             # Thay bằng API key của bạn
 )
+```
 
 ## Cài đặt & chạy ứng dụng
 
 ### Clone repo
+
 ```bash
 git clone https://github.com/Minhtc12/artchild-ai-web.git
 cd artchild-ai-web
@@ -70,11 +72,20 @@ venv\Scripts\activate
 source venv/bin/activate
 
 pip install -r requirements.txt
+```
+
 ### Đặt file mô hình vào thư mục gốc
-ARTCHILD_AI_WEB/
-    best_01.pt
-    resnet18_4class_drawing.pth
+
+    ```text
+    ARTCHILD_AI_WEB/
+        best_01.pt
+        resnet18_4class_drawing.pth
+    ```
+
 ### Chạy Flask app
+
+```bash
 python app.py
+```
+
 Mở trình duyệt và truy cập: http://127.0.0.1:5000
-````
