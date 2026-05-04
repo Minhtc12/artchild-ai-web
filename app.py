@@ -110,7 +110,7 @@ def generate_feedback(category, labels, matched, score):
 
     try:
         response = client.chat.completions.create(
-            model="local-model",  # hoặc tên cụ thể như "gemma:7b", "mistral:instruct", v.v.
+            model="local-model",  
             messages=[
                 {"role": "system", "content": "Bạn là giáo viên mỹ thuật đang đánh giá tranh của học sinh tiểu học."},
                 {"role": "user", "content": prompt}
@@ -119,10 +119,10 @@ def generate_feedback(category, labels, matched, score):
             max_tokens=150,
         )
         feedback = response.choices[0].message.content
-        print("🧠 AI trả về:", feedback)
+        print("AI trả về:", feedback)
         return feedback
     except Exception as e:
-        print(f"❌ Lỗi khi gọi LM Studio: {e}")
+        print(f"Lỗi khi gọi LM Studio: {e}")
         return "Không thể tạo nhận xét từ AI lúc này."
 
 
@@ -139,7 +139,7 @@ def index():
         uploaded_file = request.files.get("file")
 
         if uploaded_file:
-            # 🔹 Xóa ảnh cũ trong static và uploads
+            # Xóa ảnh cũ trong static và uploads
             for folder in ["uploads", "static"]:
                 folder_path = os.path.join(os.getcwd(), folder)
                 for f in os.listdir(folder_path):
@@ -147,16 +147,16 @@ def index():
                         try:
                             os.remove(os.path.join(folder_path, f))
                         except Exception as e:
-                            print(f"❌ Error deleting {f} in {folder}: {e}")
+                            print(f"Error deleting {f} in {folder}: {e}")
 
-            # 🔹 Tạo tên file duy nhất và lưu
+            # Tạo tên file duy nhất và lưu
             original_filename = secure_filename(uploaded_file.filename)
             file_ext = os.path.splitext(original_filename)[1]
             unique_filename = str(uuid.uuid4()) + file_ext
 
             upload_path = os.path.join("uploads", unique_filename)
             uploaded_file.save(upload_path)
-            logging.info("📸 Đã lưu ảnh, bắt đầu phân loại")
+            logging.info("Đã lưu ảnh, bắt đầu phân loại")
 
             try:
                 # 1. Phân loại tranh
@@ -170,28 +170,51 @@ def index():
 
                 # 3. Chấm điểm
                 score, matched = score_prediction(detected_boxes, category, results.names)
-                logging.info("📊 Chấm điểm xong, gọi OpenAI")
+                logging.info("Chấm điểm xong, gọi OpenAI")
 
                 # 4. Gọi AI tạo phản hồi
                 feedback = generate_feedback(category, result_labels, matched, score)
-                logging.info(f"🧠 Feedback AI: {feedback}")
+                logging.info(f"Feedback AI: {feedback}")
                 if not feedback or "Không thể tạo nhận xét" in feedback:
                     feedback = "(AI hiện không phản hồi. Bạn vẫn có thể xem điểm và đối tượng nhé!)"
 
                 # 5. Tìm ảnh kết quả YOLO
-                yolo_output_path = os.path.join(results.save_dir, os.path.basename(results.path))
-                for _ in range(30):
-                    if os.path.exists(yolo_output_path):
+                # Lấy tên file gốc không chứa đuôi để phòng trường hợp YOLO tự đổi đuôi thành .jpg
+                base_filename = os.path.splitext(os.path.basename(results.path))[0]
+                yolo_output_path = None
+
+                # Tăng số vòng lặp lên 100 lần (10 giây) để chắc chắn ảnh đã lưu xong
+                for _ in range(100):
+                    if os.path.exists(results.save_dir):
+                        # Quét thư mục save_dir tìm file có tên khớp với base_filename
+                        for file in os.listdir(results.save_dir):
+                            if file.startswith(base_filename):
+                                yolo_output_path = os.path.join(results.save_dir, file)
+                                break
+
+                    # Nếu đã tìm được đường dẫn và file thực sự tồn tại
+                    if yolo_output_path and os.path.exists(yolo_output_path):
                         break
                     time.sleep(0.1)
                 else:
-                    return render_template("index.html", error="❌ Không tìm thấy ảnh kết quả YOLO")
+                    return render_template("index.html", error="Không tìm thấy ảnh kết quả YOLO (đã chờ 10s)")
 
                 # 6. Copy sang static
-                static_result_path = os.path.join("static", unique_filename)
+                # Lấy tên file thực tế (có thể đuôi đã bị YOLO đổi)
+                actual_filename = os.path.basename(yolo_output_path)
+                static_result_path = os.path.join("static", actual_filename)
                 shutil.copy(yolo_output_path, static_result_path)
 
-                # 🔹 Trả kết quả trực tiếp, không dùng session để tránh lưu cũ
+                # Cập nhật lại biến img_path thành actual_filename thay vì unique_filename cũ
+                return render_template("index.html",
+                                       category=category,
+                                       score=score,
+                                       matched=matched,
+                                       labels=list(set(result_labels)),
+                                       img_path=actual_filename,
+                                       feedback=feedback)
+
+                # Trả kết quả trực tiếp, không dùng session để tránh lưu cũ
                 return render_template("index.html",
                                        category=category,
                                        score=score,
@@ -201,11 +224,11 @@ def index():
                                        feedback=feedback)
 
             except Exception as e:
-                logging.error(f"❌ Lỗi xử lý: {e}")
+                logging.error(f"Lỗi xử lý: {e}")
                 return render_template("index.html", error="Đã xảy ra lỗi trong quá trình xử lý ảnh.")
 
         else:
-            return render_template("index.html", error="❌ Bạn chưa chọn ảnh!")
+            return render_template("index.html", error="Bạn chưa chọn ảnh!")
 
     # GET request
     return render_template("index.html",

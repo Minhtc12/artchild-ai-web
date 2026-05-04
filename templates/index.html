@@ -31,7 +31,7 @@
 
 <body>
     <div class="container">
-        <h1 class="mb-4 text-center text-primary">🎨 AI Artwork Reviewer</h1>
+        <h1 class="mb-4 text-center text-primary">AI Artwork Reviewer</h1>
 
         <!-- Upload Form -->
         <div class="card p-4 mb-4">
@@ -52,13 +52,13 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="card p-3">
-                    <h5 class="mb-3">🖼️ Tranh đã tải lên:</h5>
+                    <h5 class="mb-3">Tranh đã tải lên:</h5>
                     <img src="{{ url_for('static', filename=img_path) }}" alt="Uploaded artwork" class="result-img">
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="card p-3">
-                    <h5 class="mb-3">📊 Kết quả đánh giá:</h5>
+                    <h5 class="mb-3">Kết quả đánh giá:</h5>
                     <p><span class="label">Thể loại tranh:</span> {{ category }}</p>
                     <p><span class="label">Các đối tượng phát hiện:</span> {{ labels }}</p>
                     <p><span class="label">Đối tượng liên quan:</span> {{ matched }}</p>
@@ -70,7 +70,7 @@
 
         {% if feedback %}
         <div class="card p-4 mt-4">
-            <h5 class="mb-3">🧠 Nhận xét của AI:</h5>
+            <h5 class="mb-3">Nhận xét của AI:</h5>
             <p>{{ feedback }}</p>
         </div>
         {% endif %}
